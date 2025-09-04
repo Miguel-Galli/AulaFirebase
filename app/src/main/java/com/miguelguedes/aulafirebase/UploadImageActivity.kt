@@ -1,5 +1,6 @@
 package com.miguelguedes.aulafirebase
 
+import android.Manifest
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -17,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.miguelguedes.aulafirebase.databinding.ActivityPrincipalBinding
 import com.miguelguedes.aulafirebase.databinding.ActivityUploadImageBinding
+import com.miguelguedes.aulafirebase.helper.Permission
 import com.squareup.picasso.Picasso
 import java.io.ByteArrayOutputStream
 import java.util.UUID
@@ -60,6 +62,32 @@ class UploadImageActivity : AppCompatActivity() {
         }
     }
 
+    private val permissoes = listOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    )
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String?>,
+        grantResults: IntArray,
+        deviceId: Int
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
+
+        Log.i("permissao_app", "rquestCode: $requestCode")
+
+        permissions.forEachIndexed { index, valor ->
+            Log.i("permissao_app", "permissao: $valor status: $index")
+        }
+
+        grantResults.forEachIndexed { index, valor->
+            Log.i("permissao_app", "permissao: $valor status: $index")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -69,6 +97,12 @@ class UploadImageActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        Permission.requisitarPermissao(
+            this,
+            permissoes,
+            100
+        )
 
         binding.btnGaleria.setOnClickListener{
             abrirGaleria.launch("image/*")//MIME type
